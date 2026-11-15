@@ -25,6 +25,7 @@
     .pg .tb,.pg .ao{display:none!important}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.top h1{margin:0}#pr{display:none}
     .badge-sync{font-size:12px;padding:3px 8px;border-radius:6px;background:var(--ea);color:var(--ka);display:inline-flex;align-items:center;gap:4px}
     .badge-sync.err{background:var(--ed);color:var(--kd)}
+    .info-box{background:var(--bg);border:1px dashed var(--ln);border-radius:8px;padding:10px;font-size:13px;margin:8px 0}
     @media print{body>*:not(#pr){display:none!important}#pr{display:block!important}}
   </style>
 </head>
@@ -78,7 +79,7 @@
 
 <script>
 // ============================================================================
-// KONFIGURASI API GOOGLE APPS SCRIPT (SEMATKAN URL DEPLOYMENT ANDA DI SINI)
+// KONFIGURASI API GOOGLE APPS SCRIPT
 // ============================================================================
 const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbzp-oUFZdn5w3ZnP2iIjbW0Go98L80dS2eXI-94Gh9fQWEeK8aqi6uHNTrfKjtiI958/exec";
 
@@ -106,7 +107,7 @@ const PCSS = `
   .sert-tbl td,.sert-tbl th{border:1px solid #333;padding:6px 10px}
 `;
 
-// Data Bawaan Awal (Fallback jika belum tersinkron dengan Spreadsheet)
+// Data Bawaan Awal
 const DEFAULT_DATA = {
   b: [
     {"id": "NAHWU-1", "m": "NAHWU", "n": 1, "q": "Menasobkan mubtadak dan khobar sekaligus merupakan tugasnya, ini adalah pengertian dari apa?\nJawab :\nItu adalah pengertian dari amil nawasikh dzonna dan saudara-saudaranya. Contohnya: ظَنَنْتُ زَيْدًا ذَاهِبًا", "t": "Mudah", "k": "A"},
@@ -155,10 +156,10 @@ function toast(msg) {
   el.textContent = msg;
   el.style.display = 'block';
   clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.display = 'none'; }, 3000);
+  el._t = setTimeout(() => { el.style.display = 'none'; }, 3500);
 }
 
-// Dialog Konfirmasi Kustom (Pengganti confirm() bawaan browser)
+// Dialog Konfirmasi Kustom
 function askConfirm(message, onConfirm) {
   const dlg = document.getElementById('dlg');
   dlg.innerHTML = `
@@ -322,7 +323,7 @@ function render() {
   else if (TAB === 'data') renderData(v);
 }
 
-// 1. TAB BANK SOAL
+// 1. TAB BANK SOAL (DILENGKAPI TEMPLATE & IMPORT SOAL)
 function renderBank(v) {
   const filtered = DB.b.filter(item => {
     if (FILTER.m !== 'ALL' && item.m !== FILTER.m) return false;
@@ -333,34 +334,45 @@ function renderBank(v) {
   });
 
   v.innerHTML = `
-    <div class="card bar">
-      <label>Mata Pelajaran
-        <select onchange="FILTER.m=this.value;render()">
-          <option value="ALL">Semua Mapel (${DB.b.length})</option>
-          ${M.map(m => `<option value="${m[0]}" ${FILTER.m === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}
-        </select>
-      </label>
-      <label>Tingkat
-        <select onchange="FILTER.t=this.value;render()">
-          <option value="ALL">Semua</option>
-          <option value="Mudah" ${FILTER.t === 'Mudah' ? 'selected' : ''}>Mudah</option>
-          <option value="Susah" ${FILTER.t === 'Susah' ? 'selected' : ''}>Susah</option>
-          <option value="Nonaktif" ${FILTER.t === 'Nonaktif' ? 'selected' : ''}>Nonaktif</option>
-        </select>
-      </label>
-      <label>Kategori
-        <select onchange="FILTER.k=this.value;render()">
-          <option value="ALL">Semua</option>
-          <option value="A" ${FILTER.k === 'A' ? 'selected' : ''}>Kategori A</option>
-          <option value="B" ${FILTER.k === 'B' ? 'selected' : ''}>Kategori B</option>
-        </select>
-      </label>
-      <label style="flex:1;min-width:180px">Cari Soal / ID
-        <input type="search" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;render()" placeholder="Ketik kata kunci...">
-      </label>
-      <div style="align-self:flex-end" class="bar">
-        <button onclick="openSoalModal()">+ Tambah Soal</button>
-        <button class="g" onclick="printSoalList()">Cetak Soal</button>
+    <div class="card">
+      <div class="bar" style="justify-content:space-between;margin-bottom:8px">
+        <div>
+          <h3 style="margin:0">Bank Soal Ujian Komprehensif</h3>
+          <span class="mu">Kelola butir soal secara manual atau import massal dari Excel</span>
+        </div>
+        <div class="bar">
+          <button class="g" onclick="downloadTemplateSoal()" title="Unduh format Excel untuk pengisian soal">📥 Template Soal</button>
+          <button class="g" onclick="openImportSoalModal()" title="Unggah file Excel berisi soal">📤 Import Soal</button>
+          <button onclick="openSoalModal()">+ Tambah Soal</button>
+          <button class="g" onclick="printSoalList()">🖨️ Cetak</button>
+        </div>
+      </div>
+
+      <div class="bar" style="border-top:1px solid var(--ln);padding-top:8px">
+        <label>Mata Pelajaran
+          <select onchange="FILTER.m=this.value;render()">
+            <option value="ALL">Semua Mapel (${DB.b.length})</option>
+            ${M.map(m => `<option value="${m[0]}" ${FILTER.m === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}
+          </select>
+        </label>
+        <label>Tingkat
+          <select onchange="FILTER.t=this.value;render()">
+            <option value="ALL">Semua</option>
+            <option value="Mudah" ${FILTER.t === 'Mudah' ? 'selected' : ''}>Mudah</option>
+            <option value="Susah" ${FILTER.t === 'Susah' ? 'selected' : ''}>Susah</option>
+            <option value="Nonaktif" ${FILTER.t === 'Nonaktif' ? 'selected' : ''}>Nonaktif</option>
+          </select>
+        </label>
+        <label>Kategori
+          <select onchange="FILTER.k=this.value;render()">
+            <option value="ALL">Semua</option>
+            <option value="A" ${FILTER.k === 'A' ? 'selected' : ''}>Kategori A</option>
+            <option value="B" ${FILTER.k === 'B' ? 'selected' : ''}>Kategori B</option>
+          </select>
+        </label>
+        <label style="flex:1;min-width:180px">Cari Soal / ID
+          <input type="search" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;render()" placeholder="Ketik kata kunci...">
+        </label>
       </div>
     </div>
     <p class="mu">Menampilkan <b>${filtered.length}</b> dari <b>${DB.b.length}</b> butir soal.</p>
@@ -382,6 +394,159 @@ function renderBank(v) {
       </div>
     `).join('')}
   `;
+}
+
+// Fungsi Download Template Excel untuk Bank Soal
+function downloadTemplateSoal() {
+  if (typeof XLSX === 'undefined') return toast('Library Excel sedang dimuat, silakan coba lagi.');
+  
+  const sampleRows = [
+    {
+      kode_mapel: 'NAHWU',
+      nomor: 2,
+      pertanyaan_dan_jawaban: 'Sebutkan pembagian kalimat (kata) dalam ilmu nahwu!\nJawab:\nKalimat terbagi menjadi 3: Isim, Fi\'il, dan Huruf.',
+      tingkat: 'Mudah',
+      kategori: 'A'
+    },
+    {
+      kode_mapel: 'FIQIH',
+      nomor: 2,
+      pertanyaan_dan_jawaban: 'Apa saja rukun wudhu yang wajib dipenuhi?\nJawab:\n1. Niat, 2. Membasuh muka, 3. Membasuh kedua tangan sampai siku, 4. Mengusap sebagian kepala, 5. Membasuh kedua kaki sampai mata kaki, 6. Tertib.',
+      tingkat: 'Susah',
+      kategori: 'A'
+    }
+  ];
+
+  const panduanRows = [
+    { Kolom: 'kode_mapel', Wajib: 'Ya', Keterangan: 'Isi dengan salah satu kode berikut: NAHWU, SEJARAH, NU, HADIS, FIQIH' },
+    { Kolom: 'nomor', Wajib: 'Ya', Keterangan: 'Angka nomor urut soal per mapel (contoh: 1, 2, 3). ID Soal otomatis menjadi MAPEL-NOMOR (contoh: NAHWU-2)' },
+    { Kolom: 'pertanyaan_dan_jawaban', Wajib: 'Ya', Keterangan: 'Tulis soal beserta kunci jawabannya. Pisahkan dengan kata "Jawab:" agar fitur cetak tanpa kunci bisa memisahkan soal dan jawaban.' },
+    { Kolom: 'tingkat', Wajib: 'Opsional', Keterangan: 'Isi dengan: Mudah, Susah, atau Nonaktif (Default: Mudah)' },
+    { Kolom: 'kategori', Wajib: 'Opsional', Keterangan: 'Isi dengan: A atau B (Default: A)' }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const wsData = XLSX.utils.json_to_sheet(sampleRows);
+  wsData['!cols'] = [{ wch: 15 }, { wch: 10 }, { wch: 65 }, { wch: 15 }, { wch: 12 }];
+  
+  const wsGuide = XLSX.utils.json_to_sheet(panduanRows);
+  wsGuide['!cols'] = [{ wch: 25 }, { wch: 12 }, { wch: 75 }];
+
+  XLSX.utils.book_append_sheet(wb, wsData, 'Template_Soal');
+  XLSX.utils.book_append_sheet(wb, wsGuide, 'Panduan_Pengisian');
+  XLSX.writeFile(wb, 'Template_Import_Bank_Soal.xlsx');
+  toast('Template Excel Bank Soal berhasil diunduh');
+}
+
+// Modal Import Soal dari Excel
+function openImportSoalModal() {
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <form onsubmit="processImportSoal(event)">
+      <h3>Import Bank Soal dari Excel (.xlsx / .xls / .csv)</h3>
+      <div class="info-box">
+        <b>Petunjuk Singkat:</b>
+        <ul style="margin:4px 0 0 18px;padding:0">
+          <li>Gunakan file dari tombol <b>Template Soal</b> agar struktur kolom sesuai.</li>
+          <li>Kode mapel yang valid: <b>NAHWU, SEJARAH, NU, HADIS, FIQIH</b>.</li>
+          <li>Pisahkan pertanyaan dan kunci dengan baris baru diawali <code>Jawab:</code>.</li>
+        </ul>
+      </div>
+      <label>Pilih File Excel
+        <input type="file" id="imp-soal-file" accept=".xlsx,.xls,.csv" required>
+      </label>
+      <label>Mode Import Data
+        <select id="imp-soal-mode">
+          <option value="merge">Gabung & Perbarui (Tambah soal baru & timpa jika ID soal sama)</option>
+          <option value="skip">Hanya Tambah Baru (Lewati jika ID soal sudah ada)</option>
+          <option value="replace">Ganti Semua (Hapus seluruh bank soal lama, ganti dengan isi file)</option>
+        </select>
+      </label>
+      <div class="r" style="margin-top:14px">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="submit">Proses Import Soal</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+}
+
+function processImportSoal(e) {
+  e.preventDefault();
+  const fileInput = document.getElementById('imp-soal-file');
+  const mode = document.getElementById('imp-soal-mode').value;
+  if (!fileInput.files || !fileInput.files[0]) return toast('Pilih file terlebih dahulu!');
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const firstSheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+
+      if (!rows || rows.length === 0) return toast('File Excel kosong atau tidak terbaca.');
+
+      const validMapels = M.map(x => x[0]);
+      const parsedItems = [];
+      let skipped = 0;
+
+      rows.forEach((row, idx) => {
+        // Normalisasi nama header (case-insensitive)
+        const norm = {};
+        Object.keys(row).forEach(k => { norm[k.trim().toLowerCase()] = row[k]; });
+
+        let rawMapel = String(norm.kode_mapel || norm.mapel || norm.m || '').trim().toUpperCase();
+        // Cocokkan juga jika user menulis nama lengkap mapel (misal "Nahwu Shorof")
+        const foundM = M.find(x => x[0] === rawMapel || x[1].toUpperCase() === rawMapel || x[2] === rawMapel);
+        const m = foundM ? foundM[0] : '';
+
+        const q = String(norm.pertanyaan_dan_jawaban || norm.pertanyaan || norm.soal || norm.q || '').trim();
+        let n = parseInt(norm.nomor || norm.no || norm.n, 10);
+        if (isNaN(n) || n <= 0) n = DB.b.length + parsedItems.length + 1;
+
+        const rawT = String(norm.tingkat || norm.t || 'Mudah').trim();
+        const t = ['Mudah', 'Susah', 'Nonaktif'].find(x => x.toLowerCase() === rawT.toLowerCase()) || 'Mudah';
+
+        const rawK = String(norm.kategori || norm.k || 'A').trim().toUpperCase();
+        const k = (rawK === 'B') ? 'B' : 'A';
+
+        if (!m || !validMapels.includes(m) || !q) {
+          skipped++;
+          return;
+        }
+
+        const id = String(norm.id || `${m}-${n}`).trim().toUpperCase();
+        parsedItems.push({ id, m, n, q, t, k });
+      });
+
+      if (parsedItems.length === 0) {
+        return toast('Tidak ada baris valid yang ditemukan. Pastikan kolom kode_mapel & pertanyaan terisi benar.');
+      }
+
+      if (mode === 'replace') {
+        DB.b = parsedItems;
+      } else {
+        parsedItems.forEach(item => {
+          const existIdx = DB.b.findIndex(x => x.id === item.id);
+          if (existIdx > -1) {
+            if (mode === 'merge') DB.b[existIdx] = item;
+          } else {
+            DB.b.push(item);
+          }
+        });
+      }
+
+      document.getElementById('dlg').close();
+      render();
+      pushToCloud('save_bank', { b: DB.b });
+      toast(`Berhasil mengimport ${parsedItems.length} soal` + (skipped > 0 ? ` (${skipped} baris dilewati)` : ''));
+    } catch (err) {
+      console.error(err);
+      toast('Gagal membaca file Excel: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(fileInput.files[0]);
 }
 
 function printSoalList() {
@@ -556,7 +721,7 @@ function deletePaket(id) {
   });
 }
 
-// 3. TAB DAFTAR SISWA
+// 3. TAB DAFTAR SISWA (DILENGKAPI TEMPLATE & IMPORT SISWA)
 function renderSiswa(v) {
   v.innerHTML = `
     <div class="card bar" style="justify-content:space-between">
@@ -565,6 +730,8 @@ function renderSiswa(v) {
         <span class="mu">Disimpan terpisah di sheet <b>Data_Siswa</b></span>
       </div>
       <div class="bar">
+        <button class="g" onclick="downloadTemplateSiswa()" title="Unduh format Excel untuk data siswa">📥 Template Siswa</button>
+        <button class="g" onclick="openImportSiswaModal()" title="Unggah file Excel daftar siswa">📤 Import Siswa</button>
         <button onclick="openSiswaModal()">+ Tambah Siswa</button>
       </div>
     </div>
@@ -590,6 +757,132 @@ function renderSiswa(v) {
       </table>
     </div>
   `;
+}
+
+// Fungsi Download Template Excel untuk Data Siswa
+function downloadTemplateSiswa() {
+  if (typeof XLSX === 'undefined') return toast('Library Excel sedang dimuat, silakan coba lagi.');
+  
+  const defaultPkt = DB.p[0]?.id || 'PKT-1';
+  const sampleRows = [
+    { nis: '2026003', nama: 'Muhammad Rizki', kelas: 'XII IPA 1', paket_id: defaultPkt },
+    { nis: '2026004', nama: 'Nurul Hidayah', kelas: 'XII IPS 2', paket_id: defaultPkt }
+  ];
+
+  const panduanRows = [
+    { Kolom: 'nis', Wajib: 'Ya', Keterangan: 'Nomor Induk Siswa atau Nomor Peserta Ujian (Harus unik per siswa)' },
+    { Kolom: 'nama', Wajib: 'Ya', Keterangan: 'Nama lengkap peserta ujian (akan dicetak di sertifikat)' },
+    { Kolom: 'kelas', Wajib: 'Ya', Keterangan: 'Kelas siswa (contoh: XII IPA 1, XII Agama)' },
+    { Kolom: 'paket_id', Wajib: 'Opsional', Keterangan: `Kode paket soal yang diujikan (contoh: ${defaultPkt}). Lihat kode paket di menu Pengelompokan Paket.` }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const wsData = XLSX.utils.json_to_sheet(sampleRows);
+  wsData['!cols'] = [{ wch: 15 }, { wch: 30 }, { wch: 15 }, { wch: 15 }];
+  
+  const wsGuide = XLSX.utils.json_to_sheet(panduanRows);
+  wsGuide['!cols'] = [{ wch: 15 }, { wch: 12 }, { wch: 70 }];
+
+  XLSX.utils.book_append_sheet(wb, wsData, 'Template_Siswa');
+  XLSX.utils.book_append_sheet(wb, wsGuide, 'Panduan_Pengisian');
+  XLSX.writeFile(wb, 'Template_Import_Data_Siswa.xlsx');
+  toast('Template Excel Data Siswa berhasil diunduh');
+}
+
+// Modal Import Siswa dari Excel
+function openImportSiswaModal() {
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <form onsubmit="processImportSiswa(event)">
+      <h3>Import Data Siswa dari Excel (.xlsx / .xls / .csv)</h3>
+      <div class="info-box">
+        <b>Petunjuk Singkat:</b>
+        <ul style="margin:4px 0 0 18px;padding:0">
+          <li>Unduh <b>Template Siswa</b> untuk mendapatkan format header kolom yang sesuai (<code>nis</code>, <code>nama</code>, <code>kelas</code>, <code>paket_id</code>).</li>
+          <li>Pastikan kolom <b>NIS</b> dan <b>Nama</b> tidak kosong.</li>
+        </ul>
+      </div>
+      <label>Pilih File Excel
+        <input type="file" id="imp-siswa-file" accept=".xlsx,.xls,.csv" required>
+      </label>
+      <label>Mode Import Data
+        <select id="imp-siswa-mode">
+          <option value="merge">Gabung & Perbarui (Tambah siswa baru & update nama/kelas jika NIS sama)</option>
+          <option value="skip">Hanya Tambah Baru (Lewati jika NIS sudah terdaftar)</option>
+          <option value="replace">Ganti Semua (Hapus daftar siswa lama, ganti dengan isi file)</option>
+        </select>
+      </label>
+      <div class="r" style="margin-top:14px">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="submit">Proses Import Siswa</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+}
+
+function processImportSiswa(e) {
+  e.preventDefault();
+  const fileInput = document.getElementById('imp-siswa-file');
+  const mode = document.getElementById('imp-siswa-mode').value;
+  if (!fileInput.files || !fileInput.files[0]) return toast('Pilih file terlebih dahulu!');
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const firstSheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+
+      if (!rows || rows.length === 0) return toast('File Excel kosong atau tidak terbaca.');
+
+      const parsedSiswa = [];
+      let skipped = 0;
+
+      rows.forEach(row => {
+        const norm = {};
+        Object.keys(row).forEach(k => { norm[k.trim().toLowerCase()] = row[k]; });
+
+        const nis = String(norm.nis || norm.no_peserta || norm.nomor_peserta || '').trim();
+        const nama = String(norm.nama || norm.nama_lengkap || norm.nama_siswa || '').trim();
+        const kelas = String(norm.kelas || norm.rombel || '-').trim();
+        const paket_id = String(norm.paket_id || norm.paket || norm.kode_paket || DB.p[0]?.id || '').trim();
+
+        if (!nis || !nama) {
+          skipped++;
+          return;
+        }
+        parsedSiswa.push({ nis, nama, kelas, paket_id });
+      });
+
+      if (parsedSiswa.length === 0) {
+        return toast('Tidak ada data siswa valid. Pastikan kolom nis & nama terisi.');
+      }
+
+      if (mode === 'replace') {
+        DB.s = parsedSiswa;
+      } else {
+        parsedSiswa.forEach(item => {
+          const existIdx = DB.s.findIndex(x => String(x.nis) === String(item.nis));
+          if (existIdx > -1) {
+            if (mode === 'merge') DB.s[existIdx] = item;
+          } else {
+            DB.s.push(item);
+          }
+        });
+      }
+
+      document.getElementById('dlg').close();
+      render();
+      pushToCloud('save_siswa', { s: DB.s });
+      toast(`Berhasil mengimport ${parsedSiswa.length} siswa` + (skipped > 0 ? ` (${skipped} baris dilewati)` : ''));
+    } catch (err) {
+      console.error(err);
+      toast('Gagal membaca file Excel: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(fileInput.files[0]);
 }
 
 function openSiswaModal(nis = null) {
@@ -644,7 +937,7 @@ function deleteSiswa(nis) {
   });
 }
 
-// 4. TAB PENILAIAN (Bisa diakses Admin & Penguji)
+// 4. TAB PENILAIAN
 function renderNilai(v) {
   v.innerHTML = `
     <div class="card bar" style="justify-content:space-between">

@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Soal Ujian Komprehensif · MA Al Fattah</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root{--bg:#f5f7f4;--cd:#fff;--tx:#1c2321;--mu:#66726d;--ln:#dde3df;--pr:#1f6f5c;--pt:#fff;--ea:#d9f0e4;--ka:#0f5a3d;--ed:#fde8d6;--kd:#9a4a00;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+    @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121715;--cd:#1b2220;--tx:#e8eeeb;--mu:#98a6a0;--ln:#2e3935;--pr:#4fb596;--pt:#06201a;--ea:#17382c;--ka:#8fe0bd;--ed:#3d2a15;--kd:#ffb978;color-scheme:dark}}
+    :root[data-theme="dark"]{--bg:#121715;--cd:#1b2220;--tx:#e8eeeb;--mu:#98a6a0;--ln:#2e3935;--pr:#4fb596;--pt:#06201a;--ea:#17382c;--ka:#8fe0bd;--ed:#3d2a15;--kd:#ffb978;color-scheme:dark}
+    html,body{height:auto}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    main{max-width:1100px;margin:0 auto;padding:12px}h1{font-size:19px;margin:6px 0}h3{margin:0 0 8px}.mu{color:var(--mu);font-size:13px}
+    .tb{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.tb button{flex:1;min-width:120px}.tb .on{background:var(--pr);color:var(--pt)}
+    button{font:inherit;border:1px solid var(--pr);background:var(--pr);color:var(--pt);padding:6px 12px;border-radius:8px;cursor:pointer;transition:opacity .15s}button:hover{opacity:.9}button.g{background:transparent;color:var(--pr)}.tb button:not(.on){background:transparent;color:var(--pr)}button.d{border-color:#c93b3b;background:#c93b3b;color:#fff}
+    input,select,textarea{font:inherit;color:var(--tx);background:var(--cd);border:1px solid var(--ln);border-radius:8px;padding:6px 8px;max-width:100%}textarea{width:100%;box-sizing:border-box}
+    .card,.it,dialog{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:12px;margin:8px 0}.it{display:grid;gap:6px}
+    .bar,.r{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.r{justify-content:flex-end}.bar label{display:flex;flex-direction:column;font-size:12px;color:var(--mu)}
+    .sc{overflow-x:auto}main table{border-collapse:collapse;width:100%}main td,main th{border-bottom:1px solid var(--ln);padding:8px 6px;text-align:left;vertical-align:top}
+    .c{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;margin:2px;cursor:default}.c.m{background:var(--ea);color:var(--ka)}.c.s{background:var(--ed);color:var(--kd)}.c.o{background:var(--ln)}td .c{cursor:pointer}
+    .pq,.q{white-space:pre-wrap;unicode-bidi:plaintext;overflow-wrap:anywhere}.q{background:var(--bg);padding:8px;border-radius:8px;margin:6px 0}
+    dialog{width:min(640px,94vw);color:var(--tx);border:1px solid var(--ln)}dialog::backdrop{background:rgba(0,0,0,.5)}dialog label{display:block;margin:8px 0;font-size:13px}dialog select,dialog input,dialog textarea{width:100%;box-sizing:border-box}
+    #tst{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--pr);color:var(--pt);padding:8px 16px;border-radius:8px;display:none;z-index:99;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    #lg{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}#lg .bx{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:22px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}#lg h2{margin:0}
+    .pg .tb,.pg .ao{display:none!important}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.top h1{margin:0}#pr{display:none}
+    .badge-sync{font-size:12px;padding:3px 8px;border-radius:6px;background:var(--ea);color:var(--ka);display:inline-flex;align-items:center;gap:4px}
+    .badge-sync.err{background:var(--ed);color:var(--kd)}
+    @media print{body>*:not(#pr){display:none!important}#pr{display:block!important}}
+  </style>
+</head>
+<body>
+
+<main id="app" style="display:none">
+  <div class="top">
+    <h1>Soal Ujian Komprehensif <span class="mu" id="hdr-madrasah">· MA Al Fattah</span></h1>
+    <div class="bar">
+      <span id="sync-status" class="badge-sync">Lokal</span>
+      <button class="g" onclick="pullFromCloud()" title="Tarik data terbaru dari Spreadsheet">↻ Sinkron</button>
+      <button class="g" onclick="toggleTheme()" title="Ganti Tema">◐</button>
+      <span class="mu" id="rl"></span>
+      <button class="g" onclick="lo()">Keluar</button>
+    </div>
+  </div>
+
+  <div class="tb">
+    <button data-t="bank" onclick="go('bank')">Bank Soal</button>
+    <button data-t="paket" onclick="go('paket')">Pengelompokan Paket</button>
+    <button data-t="siswa" onclick="go('siswa')">Daftar Siswa</button>
+    <button data-t="nilai" onclick="go('nilai')">Penilaian</button>
+    <button data-t="sert" onclick="go('sert')">Sertifikat</button>
+    <button data-t="data" onclick="go('data')">Data & API</button>
+  </div>
+
+  <div id="v"></div>
+</main>
+
+<div id="pr"></div>
+
+<div id="lg">
+  <form class="bx" onsubmit="return li(event)">
+    <h2>Masuk</h2>
+    <p class="mu" style="margin:0">Soal Ujian Komprehensif · MA Al Fattah</p>
+    <label>Peran
+      <select id="lr" onchange="lc()">
+        <option value="admin">Admin</option>
+        <option value="penguji">Penguji</option>
+      </select>
+    </label>
+    <label id="lpw">Kata sandi
+      <input id="lp" type="password" autocomplete="current-password" placeholder="Default: admin123">
+    </label>
+    <button type="submit">Masuk</button>
+  </form>
+</div>
+
+<dialog id="dlg"></dialog>
+<div id="tst"></div>
+
+<script>
+// ============================================================================
+// KONFIGURASI API GOOGLE APPS SCRIPT (SEMATKAN URL DEPLOYMENT ANDA DI SINI)
+// ============================================================================
+const DEFAULT_API_URL = "https://script.google.com/macros/s/PASTE_ID_DEPLOYMENT_ANDA_DISINI/exec";
+
+const M = [
+  ['NAHWU', 'Nahwu Shorof', 'NAH'],
+  ['SEJARAH', 'Sejarah', 'SEJ'],
+  ['NU', 'Aswaja / Ke-NU-an', 'NU'],
+  ['HADIS', 'Ilmu Hadis', 'HAD'],
+  ['FIQIH', 'Fiqih', 'FIQ']
+];
+
+const PCSS = `
+  .sh{font:12px/1.4 Georgia,serif;color:#000;background:#fff;padding:20px;page-break-after:always}
+  .sh h3{text-align:center;margin:8px 0}
+  .kop{text-align:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
+  .sh table{width:100%;border-collapse:collapse;margin:8px 0}
+  .sh td,.sh th{border:1px solid #000;padding:5px;vertical-align:top;text-align:left}
+  .pq{white-space:pre-wrap;unicode-bidi:plaintext}
+  .ky{margin-top:4px;padding-top:3px;border-top:1px dashed #666;font-size:11px;white-space:pre-wrap}
+  .tt{display:flex;justify-content:space-around;margin-top:20px;text-align:center}
+  .tt div{width:35%;height:80px}
+  .sert-box{border:4px double #1f6f5c;padding:28px;text-align:center;font-family:Georgia,serif;color:#000;background:#fff;page-break-after:always}
+  .sert-box h1{font-size:24px;letter-spacing:2px;margin:6px 0;color:#1f6f5c}
+  .sert-tbl{width:80%;margin:16px auto;border-collapse:collapse;text-align:left}
+  .sert-tbl td,.sert-tbl th{border:1px solid #333;padding:6px 10px}
+`;
+
+// Data Bawaan Awal (Fallback jika belum tersinkron dengan Spreadsheet)
+const DEFAULT_DATA = {
+  b: [
+    {"id": "NAHWU-1", "m": "NAHWU", "n": 1, "q": "Menasobkan mubtadak dan khobar sekaligus merupakan tugasnya, ini adalah pengertian dari apa?\nJawab :\nItu adalah pengertian dari amil nawasikh dzonna dan saudara-saudaranya. Contohnya: ظَنَنْتُ زَيْدًا ذَاهِبًا", "t": "Mudah", "k": "A"},
+    {"id": "SEJARAH-1", "m": "SEJARAH", "n": 1, "q": "Apakah Singkatan dari PPKI, dan Berapa kali PPKI menyelenggarakan sidang?\nJawab:\nPPKI adalah Panitia Persiapan Kemerdekaan Indonesia. Sidang PPKI diselenggarakan 4 kali pada tanggal 18-22 Agustus 1945.", "t": "Susah", "k": "A"},
+    {"id": "NU-1", "m": "NU", "n": 1, "q": "Bagaimana hukum menghadiahkan pahala bacaan Al-Qur'an kepada mayit menurut Ahlussunnah wal Jama'ah?\nJawab:\nHukumnya sunnah dan pahalanya sampai kepada mayit menurut jumhur ulama salaf dan Imam Syafi'i.", "t": "Susah", "k": "A"},
+    {"id": "HADIS-1", "m": "HADIS", "n": 1, "q": "Apa yang dimaksud dengan hadits?\nJawaban:\nHadits menurut istilah syara' ialah hal-hal yang datang dari Rasulullah SAW, baik itu ucapan, perbuatan, atau pengakuan (taqrir).", "t": "Mudah", "k": "A"},
+    {"id": "FIQIH-1", "m": "FIQIH", "n": 1, "q": "Jelaskan definisi ilmu fiqih!\nJawab:\nIlmu tentang hukum syari'ah yang berkaitan dengan perbuatan manusia mukallaf yang digali dari dalil-dalil terperinci.", "t": "Susah", "k": "A"}
+  ],
+  p: [
+    { id: 'PKT-1', nama: 'Paket Ujian Utama A', soal_ids: ['NAHWU-1', 'SEJARAH-1', 'NU-1', 'HADIS-1', 'FIQIH-1'], keterangan: 'Paket standar ujian komprehensif' }
+  ],
+  s: [
+    { nis: '2026001', nama: 'Ahmad Fauzi', kelas: 'XII IPA 1', paket_id: 'PKT-1' },
+    { nis: '2026002', nama: 'Siti Aisyah', kelas: 'XII IPS 1', paket_id: 'PKT-1' }
+  ],
+  v: {},
+  c: {
+    madrasah: 'MA Al Fattah',
+    tahun_ajaran: '2025/2026',
+    kepala_madrasah: 'Kepala Madrasah, M.Pd.',
+    nip_kepala: '-',
+    pass_admin: 'admin123',
+    pass_penguji: ''
+  }
+};
+
+// State Aplikasi
+let DB = JSON.parse(localStorage.getItem('ujian_komp_db')) || JSON.parse(JSON.stringify(DEFAULT_DATA));
+let ROLE = sessionStorage.getItem('ujian_role') || '';
+let TAB = 'bank';
+let FILTER = { m: 'ALL', t: 'ALL', k: 'ALL', q: '' };
+
+function getApiUrl() {
+  const saved = localStorage.getItem('ujian_api_url');
+  if (saved && saved.startsWith('http')) return saved;
+  if (DEFAULT_API_URL && !DEFAULT_API_URL.includes('PASTE_ID_DEPLOYMENT')) return DEFAULT_API_URL;
+  return '';
+}
+
+function saveLocal() {
+  localStorage.setItem('ujian_komp_db', JSON.stringify(DB));
+}
+
+function toast(msg) {
+  const el = document.getElementById('tst');
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+// Dialog Konfirmasi Kustom (Pengganti confirm() bawaan browser)
+function askConfirm(message, onConfirm) {
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <div>
+      <h3>Konfirmasi</h3>
+      <p>${esc(message)}</p>
+      <div class="r">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="button" class="d" id="btn-confirm-ok">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('btn-confirm-ok').onclick = () => {
+    dlg.close();
+    onConfirm();
+  };
+  dlg.showModal();
+}
+
+function setSyncBadge(text, isErr = false) {
+  const el = document.getElementById('sync-status');
+  el.textContent = text;
+  el.className = 'badge-sync' + (isErr ? ' err' : '');
+}
+
+// ============================================================================
+// KOMUNIKASI API GOOGLE APPS SCRIPT
+// ============================================================================
+async function pullFromCloud(silent = false) {
+  const url = getApiUrl();
+  if (!url) {
+    setSyncBadge('Mode Lokal (API Belum Diatur)', true);
+    return;
+  }
+  setSyncBadge('Memuat...');
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.status === 'ok' && json.data) {
+      if (json.data.b && json.data.b.length > 0) DB.b = json.data.b;
+      if (json.data.p) DB.p = json.data.p;
+      if (json.data.s) DB.s = json.data.s;
+      if (json.data.v) DB.v = json.data.v;
+      if (json.data.c && Object.keys(json.data.c).length > 0) DB.c = { ...DB.c, ...json.data.c };
+      saveLocal();
+      setSyncBadge('Terhubung Cloud ✓');
+      document.getElementById('hdr-madrasah').textContent = '· ' + (DB.c.madrasah || 'MA Al Fattah');
+      if (!silent) toast('Data berhasil dimuat dari Google Spreadsheet');
+      render();
+    } else {
+      throw new Error(json.message || 'Gagal membaca data');
+    }
+  } catch (err) {
+    console.error(err);
+    setSyncBadge('Gagal Sinkron', true);
+    if (!silent) toast('Gagal terhubung ke Spreadsheet: ' + err.message);
+  }
+}
+
+async function pushToCloud(action, payloadObj) {
+  saveLocal();
+  const url = getApiUrl();
+  if (!url) {
+    toast('Tersimpan di browser (API URL belum diisi)');
+    return;
+  }
+  setSyncBadge('Menyimpan...');
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, ...payloadObj })
+    });
+    const json = await res.json();
+    if (json.status === 'ok') {
+      setSyncBadge('Tersimpan Cloud ✓');
+      toast(json.message || 'Tersimpan ke Spreadsheet');
+    } else {
+      throw new Error(json.message || 'Error server');
+    }
+  } catch (err) {
+    console.error(err);
+    setSyncBadge('Gagal Simpan Cloud', true);
+    toast('Tersimpan lokal, gagal kirim ke cloud: ' + err.message);
+  }
+}
+
+// ============================================================================
+// OTENTIKASI & NAVIGASI
+// ============================================================================
+function initAuth() {
+  if (!ROLE) {
+    document.getElementById('lg').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    lc();
+  } else {
+    document.getElementById('lg').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.body.className = ROLE === 'penguji' ? 'pg' : '';
+    document.getElementById('rl').textContent = ROLE === 'admin' ? 'Admin' : 'Penguji';
+    if (ROLE === 'penguji') TAB = 'nilai';
+    go(TAB);
+    pullFromCloud(true);
+  }
+}
+
+function lc() {
+  const r = document.getElementById('lr').value;
+  const needPass = r === 'admin' || (DB.c.pass_penguji && DB.c.pass_penguji.trim() !== '');
+  document.getElementById('lpw').style.display = needPass ? 'block' : 'none';
+}
+
+function li(e) {
+  e.preventDefault();
+  const r = document.getElementById('lr').value;
+  const p = document.getElementById('lp').value;
+  if (r === 'admin') {
+    const adminPass = DB.c.pass_admin || 'admin123';
+    if (p !== adminPass) return toast('Kata sandi Admin salah!');
+  } else if (DB.c.pass_penguji && p !== DB.c.pass_penguji) {
+    return toast('Kata sandi Penguji salah!');
+  }
+  ROLE = r;
+  sessionStorage.setItem('ujian_role', r);
+  document.getElementById('lp').value = '';
+  initAuth();
+  return false;
+}
+
+function lo() {
+  ROLE = '';
+  sessionStorage.removeItem('ujian_role');
+  initAuth();
+}
+
+function go(t) {
+  TAB = t;
+  document.querySelectorAll('.tb button').forEach(b => {
+    b.classList.toggle('on', b.dataset.t === t);
+  });
+  render();
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ujian_theme', next);
+}
+
+// ============================================================================
+// RENDER HALAMAN UTAMA
+// ============================================================================
+function render() {
+  const v = document.getElementById('v');
+  if (TAB === 'bank') renderBank(v);
+  else if (TAB === 'paket') renderPaket(v);
+  else if (TAB === 'siswa') renderSiswa(v);
+  else if (TAB === 'nilai') renderNilai(v);
+  else if (TAB === 'sert') renderSertifikat(v);
+  else if (TAB === 'data') renderData(v);
+}
+
+// 1. TAB BANK SOAL
+function renderBank(v) {
+  const filtered = DB.b.filter(item => {
+    if (FILTER.m !== 'ALL' && item.m !== FILTER.m) return false;
+    if (FILTER.t !== 'ALL' && item.t !== FILTER.t) return false;
+    if (FILTER.k !== 'ALL' && item.k !== FILTER.k) return false;
+    if (FILTER.q && !item.q.toLowerCase().includes(FILTER.q.toLowerCase()) && !item.id.toLowerCase().includes(FILTER.q.toLowerCase())) return false;
+    return true;
+  });
+
+  v.innerHTML = `
+    <div class="card bar">
+      <label>Mata Pelajaran
+        <select onchange="FILTER.m=this.value;render()">
+          <option value="ALL">Semua Mapel (${DB.b.length})</option>
+          ${M.map(m => `<option value="${m[0]}" ${FILTER.m === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}
+        </select>
+      </label>
+      <label>Tingkat
+        <select onchange="FILTER.t=this.value;render()">
+          <option value="ALL">Semua</option>
+          <option value="Mudah" ${FILTER.t === 'Mudah' ? 'selected' : ''}>Mudah</option>
+          <option value="Susah" ${FILTER.t === 'Susah' ? 'selected' : ''}>Susah</option>
+          <option value="Nonaktif" ${FILTER.t === 'Nonaktif' ? 'selected' : ''}>Nonaktif</option>
+        </select>
+      </label>
+      <label>Kategori
+        <select onchange="FILTER.k=this.value;render()">
+          <option value="ALL">Semua</option>
+          <option value="A" ${FILTER.k === 'A' ? 'selected' : ''}>Kategori A</option>
+          <option value="B" ${FILTER.k === 'B' ? 'selected' : ''}>Kategori B</option>
+        </select>
+      </label>
+      <label style="flex:1;min-width:180px">Cari Soal / ID
+        <input type="search" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;render()" placeholder="Ketik kata kunci...">
+      </label>
+      <div style="align-self:flex-end" class="bar">
+        <button onclick="openSoalModal()">+ Tambah Soal</button>
+        <button class="g" onclick="printSoalList()">Cetak Soal</button>
+      </div>
+    </div>
+    <p class="mu">Menampilkan <b>${filtered.length}</b> dari <b>${DB.b.length}</b> butir soal.</p>
+    ${filtered.map(s => `
+      <div class="it">
+        <div class="top">
+          <div>
+            <b>${esc(s.id)}</b>
+            <span class="c m">${esc(s.m)}</span>
+            <span class="c ${s.t === 'Mudah' ? 'm' : 's'}">${esc(s.t)}</span>
+            <span class="c o">Kat ${esc(s.k)}</span>
+          </div>
+          <div class="bar">
+            <button class="g" onclick="openSoalModal('${esc(s.id)}')">Edit</button>
+            <button class="g" style="color:#c93b3b;border-color:#c93b3b" onclick="deleteSoal('${esc(s.id)}')">Hapus</button>
+          </div>
+        </div>
+        <div class="q">${esc(s.q)}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function printSoalList() {
+  const html = `
+    <div class="sh">
+      <div class="kop"><b>${esc(DB.c.madrasah || 'MA AL FATTAH')}</b><br>DAFTAR BANK SOAL UJIAN KOMPREHENSIF</div>
+      <table>
+        <thead><tr><th style="width:40px">No</th><th style="width:90px">ID</th><th>Pertanyaan & Kunci</th></tr></thead>
+        <tbody>
+          ${DB.b.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.id)}</td><td><div class="pq">${esc(s.q)}</div></td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  triggerPrint(html);
+}
+
+function openSoalModal(id = null) {
+  const s = id ? DB.b.find(x => x.id === id) : { id: '', m: 'NAHWU', n: DB.b.length + 1, q: '', t: 'Mudah', k: 'A' };
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <form onsubmit="saveSoal(event, '${esc(id || '')}')">
+      <h3>${id ? 'Edit Soal (' + esc(id) + ')' : 'Tambah Soal Baru'}</h3>
+      <label>Mata Pelajaran
+        <select id="f-m" required>
+          ${M.map(m => `<option value="${m[0]}" ${s.m === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}
+        </select>
+      </label>
+      <div class="bar">
+        <label style="flex:1">Nomor Urut<input id="f-n" type="number" value="${s.n}" required></label>
+        <label style="flex:1">Tingkat
+          <select id="f-t">
+            <option value="Mudah" ${s.t === 'Mudah' ? 'selected' : ''}>Mudah</option>
+            <option value="Susah" ${s.t === 'Susah' ? 'selected' : ''}>Susah</option>
+            <option value="Nonaktif" ${s.t === 'Nonaktif' ? 'selected' : ''}>Nonaktif</option>
+          </select>
+        </label>
+        <label style="flex:1">Kategori
+          <select id="f-k">
+            <option value="A" ${s.k === 'A' ? 'selected' : ''}>A</option>
+            <option value="B" ${s.k === 'B' ? 'selected' : ''}>B</option>
+          </select>
+        </label>
+      </div>
+      <label>Pertanyaan & Kunci Jawaban
+        <textarea id="f-q" rows="7" required placeholder="Tulis pertanyaan dan jawaban...">${esc(s.q)}</textarea>
+      </label>
+      <div class="r">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="submit">Simpan ke Database</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+}
+
+function saveSoal(e, oldId) {
+  e.preventDefault();
+  const m = document.getElementById('f-m').value;
+  const n = Number(document.getElementById('f-n').value);
+  const t = document.getElementById('f-t').value;
+  const k = document.getElementById('f-k').value;
+  const q = document.getElementById('f-q').value.trim();
+  const newId = oldId || `${m}-${n}`;
+
+  if (oldId) {
+    const idx = DB.b.findIndex(x => x.id === oldId);
+    if (idx > -1) DB.b[idx] = { id: newId, m, n, q, t, k };
+  } else {
+    if (DB.b.some(x => x.id === newId)) return toast('ID Soal ' + newId + ' sudah ada!');
+    DB.b.push({ id: newId, m, n, q, t, k });
+  }
+  document.getElementById('dlg').close();
+  render();
+  pushToCloud('save_bank', { b: DB.b });
+}
+
+function deleteSoal(id) {
+  askConfirm('Hapus soal ' + id + ' secara permanen?', () => {
+    DB.b = DB.b.filter(x => x.id !== id);
+    render();
+    pushToCloud('save_bank', { b: DB.b });
+  });
+}
+
+// 2. TAB PENGELOMPOKAN PAKET
+function renderPaket(v) {
+  v.innerHTML = `
+    <div class="card bar" style="justify-content:space-between">
+      <div>
+        <h3>Pengelompokan Paket Soal</h3>
+        <span class="mu">Disimpan ke sheet <b>Paket_Soal</b></span>
+      </div>
+      <button onclick="openPaketModal()">+ Buat Paket Baru</button>
+    </div>
+    ${DB.p.map(p => `
+      <div class="it">
+        <div class="top">
+          <div>
+            <b>${esc(p.nama)}</b> <span class="c o">${esc(p.id)}</span>
+            <div class="mu">${esc(p.keterangan || 'Tanpa keterangan')} · <b>${p.soal_ids.length}</b> soal</div>
+          </div>
+          <div class="bar">
+            <button class="g" onclick="printPaket('${esc(p.id)}', false)">Cetak Soal</button>
+            <button class="g" onclick="printPaket('${esc(p.id)}', true)">Cetak + Kunci</button>
+            <button class="g" onclick="openPaketModal('${esc(p.id)}')">Edit</button>
+            <button class="g" style="color:#c93b3b;border-color:#c93b3b" onclick="deletePaket('${esc(p.id)}')">Hapus</button>
+          </div>
+        </div>
+        <div>
+          ${p.soal_ids.map(sid => `<span class="c m">${esc(sid)}</span>`).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function openPaketModal(id = null) {
+  const p = id ? DB.p.find(x => x.id === id) : { id: 'PKT-' + (DB.p.length + 1), nama: '', soal_ids: [], keterangan: '' };
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <form onsubmit="savePaket(event, '${esc(id || '')}')">
+      <h3>${id ? 'Edit Paket Soal' : 'Buat Paket Soal'}</h3>
+      <label>Kode Paket<input id="p-id" value="${esc(p.id)}" ${id ? 'readonly' : 'required'}></label>
+      <label>Nama Paket<input id="p-nama" value="${esc(p.nama)}" required placeholder="Contoh: Paket Ujian Gelombang 1"></label>
+      <label>Keterangan<input id="p-ket" value="${esc(p.keterangan)}" placeholder="Opsional"></label>
+      <label>Pilih Soal (Centang soal yang masuk paket ini):
+        <div style="max-height:220px;overflow:auto;border:1px solid var(--ln);padding:8px;border-radius:8px;margin-top:4px">
+          ${DB.b.filter(s => s.t !== 'Nonaktif').map(s => `
+            <div style="margin-bottom:4px">
+              <label style="display:flex;align-items:flex-start;gap:6px;margin:0;cursor:pointer">
+                <input type="checkbox" name="p-soal" value="${esc(s.id)}" ${p.soal_ids.includes(s.id) ? 'checked' : ''} style="width:auto;margin-top:3px">
+                <span><b>[${esc(s.id)}]</b> ${esc(s.q.slice(0, 85))}...</span>
+              </label>
+            </div>
+          `).join('')}
+        </div>
+      </label>
+      <div class="r">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="submit">Simpan Paket</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+}
+
+function savePaket(e, oldId) {
+  e.preventDefault();
+  const id = document.getElementById('p-id').value.trim();
+  const nama = document.getElementById('p-nama').value.trim();
+  const keterangan = document.getElementById('p-ket').value.trim();
+  const soal_ids = Array.from(document.querySelectorAll('input[name="p-soal"]:checked')).map(cb => cb.value);
+
+  if (oldId) {
+    const idx = DB.p.findIndex(x => x.id === oldId);
+    if (idx > -1) DB.p[idx] = { id, nama, soal_ids, keterangan };
+  } else {
+    if (DB.p.some(x => x.id === id)) return toast('Kode paket sudah ada!');
+    DB.p.push({ id, nama, soal_ids, keterangan });
+  }
+  document.getElementById('dlg').close();
+  render();
+  pushToCloud('save_paket', { p: DB.p });
+}
+
+function deletePaket(id) {
+  askConfirm('Hapus paket ' + id + '?', () => {
+    DB.p = DB.p.filter(x => x.id !== id);
+    render();
+    pushToCloud('save_paket', { p: DB.p });
+  });
+}
+
+// 3. TAB DAFTAR SISWA
+function renderSiswa(v) {
+  v.innerHTML = `
+    <div class="card bar" style="justify-content:space-between">
+      <div>
+        <h3>Daftar Peserta Ujian (${DB.s.length} Siswa)</h3>
+        <span class="mu">Disimpan terpisah di sheet <b>Data_Siswa</b></span>
+      </div>
+      <div class="bar">
+        <button onclick="openSiswaModal()">+ Tambah Siswa</button>
+      </div>
+    </div>
+    <div class="card sc">
+      <table>
+        <thead>
+          <tr><th>NIS</th><th>Nama Lengkap</th><th>Kelas</th><th>Paket Soal</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+          ${DB.s.map(s => `
+            <tr>
+              <td><b>${esc(s.nis)}</b></td>
+              <td>${esc(s.nama)}</td>
+              <td>${esc(s.kelas)}</td>
+              <td><span class="c m">${esc(s.paket_id || '-')}</span></td>
+              <td>
+                <button class="g" onclick="openSiswaModal('${esc(s.nis)}')">Edit</button>
+                <button class="g" style="color:#c93b3b;border-color:#c93b3b" onclick="deleteSiswa('${esc(s.nis)}')">Hapus</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function openSiswaModal(nis = null) {
+  const s = nis ? DB.s.find(x => x.nis === nis) : { nis: '', nama: '', kelas: 'XII ', paket_id: DB.p[0]?.id || '' };
+  const dlg = document.getElementById('dlg');
+  dlg.innerHTML = `
+    <form onsubmit="saveSiswa(event, '${esc(nis || '')}')">
+      <h3>${nis ? 'Edit Data Siswa' : 'Tambah Siswa'}</h3>
+      <label>NIS / Nomor Peserta<input id="s-nis" value="${esc(s.nis)}" ${nis ? 'readonly' : 'required'}></label>
+      <label>Nama Lengkap<input id="s-nama" value="${esc(s.nama)}" required></label>
+      <label>Kelas<input id="s-kelas" value="${esc(s.kelas)}" required></label>
+      <label>Paket Ujian
+        <select id="s-pkt">
+          <option value="">-- Pilih Paket --</option>
+          ${DB.p.map(p => `<option value="${esc(p.id)}" ${s.paket_id === p.id ? 'selected' : ''}>${esc(p.nama)} (${esc(p.id)})</option>`).join('')}
+        </select>
+      </label>
+      <div class="r">
+        <button type="button" class="g" onclick="dlg.close()">Batal</button>
+        <button type="submit">Simpan Siswa</button>
+      </div>
+    </form>
+  `;
+  dlg.showModal();
+}
+
+function saveSiswa(e, oldNis) {
+  e.preventDefault();
+  const nis = document.getElementById('s-nis').value.trim();
+  const nama = document.getElementById('s-nama').value.trim();
+  const kelas = document.getElementById('s-kelas').value.trim();
+  const paket_id = document.getElementById('s-pkt').value;
+
+  if (oldNis) {
+    const idx = DB.s.findIndex(x => x.nis === oldNis);
+    if (idx > -1) DB.s[idx] = { nis, nama, kelas, paket_id };
+  } else {
+    if (DB.s.some(x => x.nis === nis)) return toast('NIS sudah terdaftar!');
+    DB.s.push({ nis, nama, kelas, paket_id });
+  }
+  document.getElementById('dlg').close();
+  render();
+  pushToCloud('save_siswa', { s: DB.s });
+}
+
+function deleteSiswa(nis) {
+  askConfirm('Hapus siswa NIS ' + nis + ' beserta nilainya?', () => {
+    DB.s = DB.s.filter(x => x.nis !== nis);
+    delete DB.v[nis];
+    render();
+    pushToCloud('sync_all', { data: DB });
+  });
+}
+
+// 4. TAB PENILAIAN (Bisa diakses Admin & Penguji)
+function renderNilai(v) {
+  v.innerHTML = `
+    <div class="card bar" style="justify-content:space-between">
+      <div>
+        <h3>Input Penilaian Ujian Komprehensif</h3>
+        <span class="mu">Otomatis menghitung rata-rata & menyimpan ke sheet <b>Hasil_Penilaian</b></span>
+      </div>
+      <div class="bar">
+        <input id="penguji-name" placeholder="Nama Penguji..." value="${esc(localStorage.getItem('ujian_penguji_nama') || '')}" onchange="localStorage.setItem('ujian_penguji_nama', this.value)">
+        <button onclick="saveAllNilai()">Simpan Semua Nilai</button>
+      </div>
+    </div>
+    <div class="card sc">
+      <table>
+        <thead>
+          <tr>
+            <th>NIS / Nama</th>
+            <th>Kelas</th>
+            ${M.map(m => `<th>${m[2]}</th>`).join('')}
+            <th>Rata-rata</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${DB.s.map(s => {
+            const n = DB.v[s.nis] || {};
+            const vals = M.map(m => n[m[0]]).filter(val => val !== '' && val !== undefined && !isNaN(Number(val))).map(Number);
+            const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '-';
+            const lulus = vals.length === M.length ? (Number(avg) >= 70 ? '<span class="c m">LULUS</span>' : '<span class="c s">REMIDI</span>') : '<span class="c o">PROSES</span>';
+            return `
+              <tr>
+                <td><b>${esc(s.nama)}</b><br><span class="mu">${esc(s.nis)}</span></td>
+                <td>${esc(s.kelas)}</td>
+                ${M.map(m => `
+                  <td>
+                    <input type="number" min="0" max="100" style="width:62px"
+                      value="${n[m[0]] !== undefined ? n[m[0]] : ''}"
+                      onchange="updateNilaiCell('${esc(s.nis)}', '${m[0]}', this.value)">
+                  </td>
+                `).join('')}
+                <td><b>${avg}</b></td>
+                <td>${lulus}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function updateNilaiCell(nis, mapel, val) {
+  if (!DB.v[nis]) DB.v[nis] = {};
+  DB.v[nis][mapel] = val === '' ? '' : Number(val);
+  DB.v[nis].penguji = localStorage.getItem('ujian_penguji_nama') || ROLE;
+  DB.v[nis].updated_at = new Date().toLocaleString('id-ID');
+  saveLocal();
+  render();
+}
+
+function saveAllNilai() {
+  pushToCloud('save_nilai', { s: DB.s, v: DB.v });
+}
+
+// 5. TAB SERTIFIKAT
+function renderSertifikat(v) {
+  v.innerHTML = `
+    <div class="card bar" style="justify-content:space-between">
+      <div>
+        <h3>Cetak Sertifikat Kelulusan</h3>
+        <span class="mu">Klik cetak pada siswa yang telah menyelesaikan seluruh ujian</span>
+      </div>
+      <button class="g" onclick="printAllSertifikat()">Cetak Semua yang Lulus</button>
+    </div>
+    <div class="card sc">
+      <table>
+        <thead>
+          <tr><th>NIS</th><th>Nama Siswa</th><th>Kelas</th><th>Nilai Akhir</th><th>Predikat</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+          ${DB.s.map(s => {
+            const st = getStudentStats(s.nis);
+            return `
+              <tr>
+                <td>${esc(s.nis)}</td>
+                <td><b>${esc(s.nama)}</b></td>
+                <td>${esc(s.kelas)}</td>
+                <td><b>${st.avgText}</b></td>
+                <td>${st.predikat}</td>
+                <td>
+                  <button onclick="printSingleSertifikat('${esc(s.nis)}')">Cetak Sertifikat</button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function getStudentStats(nis) {
+  const n = DB.v[nis] || {};
+  const vals = M.map(m => n[m[0]]).filter(v => v !== '' && v !== undefined && !isNaN(Number(v))).map(Number);
+  if (vals.length === 0) return { avg: 0, avgText: '-', predikat: 'Belum Dinilai', complete: false };
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  let predikat = 'Kurang';
+  if (avg >= 90) predikat = 'Mumtaz (Istimewa)';
+  else if (avg >= 80) predikat = 'Jayyid Jiddan (Sangat Baik)';
+  else if (avg >= 70) predikat = 'Jayyid (Baik)';
+  return { avg, avgText: avg.toFixed(2), predikat, complete: vals.length === M.length };
+}
+
+function buildSertifikatHTML(s) {
+  const n = DB.v[s.nis] || {};
+  const st = getStudentStats(s.nis);
+  return `
+    <div class="sert-box">
+      <div style="font-size:14px;font-weight:bold">${esc(DB.c.madrasah || 'MA AL FATTAH')}</div>
+      <h1>SERTIFIKAT UJIAN KOMPREHENSIF</h1>
+      <div style="font-size:13px;margin-bottom:16px">Tahun Pelajaran ${esc(DB.c.tahun_ajaran || '2025/2026')}</div>
+      <p>Diberikan kepada:</p>
+      <h2 style="margin:4px 0;text-decoration:underline">${esc(s.nama)}</h2>
+      <p style="margin:2px 0">NIS: ${esc(s.nis)} · Kelas: ${esc(s.kelas)}</p>
+      <p style="margin-top:12px">Telah mengikuti dan dinyatakan <b>${st.avg >= 70 ? 'LULUS' : 'TELAH MENGIKUTI'}</b> Ujian Komprehensif Kepesantrenan & Keagamaan dengan rincian nilai sebagai berikut:</p>
+      <table class="sert-tbl">
+        <thead><tr><th>No</th><th>Materi Ujian</th><th>Nilai</th><th>Keterangan</th></tr></thead>
+        <tbody>
+          ${M.map((m, idx) => {
+            const val = n[m[0]] !== undefined && n[m[0]] !== '' ? Number(n[m[0]]) : '-';
+            return `<tr><td>${idx + 1}</td><td>${m[1]}</td><td><b>${val}</b></td><td>${val !== '-' ? (val >= 70 ? 'Lulus' : 'Belum Tuntas') : '-'}</td></tr>`;
+          }).join('')}
+          <tr><th colspan="2">Rata-rata / Predikat</th><th>${st.avgText}</th><th>${st.predikat}</th></tr>
+        </tbody>
+      </table>
+      <div class="tt">
+        <div></div>
+        <div>
+          Mengetahui,<br>Kepala ${esc(DB.c.madrasah || 'MA Al Fattah')}<br><br><br><br>
+          <b><u>${esc(DB.c.kepala_madrasah || 'Kepala Madrasah')}</u></b><br>
+          NIP. ${esc(DB.c.nip_kepala || '-')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function printSingleSertifikat(nis) {
+  const s = DB.s.find(x => x.nis === nis);
+  if (!s) return;
+  triggerPrint(buildSertifikatHTML(s));
+}
+
+function printAllSertifikat() {
+  const lulusList = DB.s.filter(s => getStudentStats(s.nis).avg >= 70);
+  if (lulusList.length === 0) return toast('Belum ada siswa yang memenuhi kriteria lulus (≥ 70)');
+  triggerPrint(lulusList.map(buildSertifikatHTML).join(''));
+}
+
+// 6. TAB DATA, PENGATURAN & API SPREADSHEET
+function renderData(v) {
+  const currentApi = getApiUrl();
+  v.innerHTML = `
+    <div class="card">
+      <h3>Koneksi Database Google Spreadsheet (Apps Script)</h3>
+      <p class="mu">Data akan dipisahkan otomatis ke 5 sheet: <b>Bank_Soal</b>, <b>Paket_Soal</b>, <b>Data_Siswa</b>, <b>Hasil_Penilaian</b>, dan <b>Pengaturan</b>.</p>
+      <label style="display:block;margin:8px 0">URL Web App Google Apps Script
+        <input id="cfg-api" style="width:100%;box-sizing:border-box" value="${esc(currentApi)}" placeholder="https://script.google.com/macros/s/.../exec">
+      </label>
+      <div class="bar">
+        <button onclick="saveApiConfig()">Simpan URL API</button>
+        <button class="g" onclick="pullFromCloud()">↓ Tarik Data dari Spreadsheet</button>
+        <button class="g" onclick="pushAllToCloud()">↑ Kirim Semua Data Lokal ke Spreadsheet</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Pengaturan Madrasah & Keamanan</h3>
+      <form onsubmit="saveGeneralConfig(event)">
+        <div class="bar">
+          <label style="flex:1;min-width:200px">Nama Madrasah<input id="c-madrasah" value="${esc(DB.c.madrasah || '')}"></label>
+          <label style="flex:1;min-width:150px">Tahun Ajaran<input id="c-ta" value="${esc(DB.c.tahun_ajaran || '')}"></label>
+        </div>
+        <div class="bar" style="margin-top:8px">
+          <label style="flex:1;min-width:200px">Nama Kepala Madrasah<input id="c-kepala" value="${esc(DB.c.kepala_madrasah || '')}"></label>
+          <label style="flex:1;min-width:150px">NIP Kepala<input id="c-nip" value="${esc(DB.c.nip_kepala || '')}"></label>
+        </div>
+        <div class="bar" style="margin-top:8px">
+          <label style="flex:1;min-width:150px">Password Admin<input id="c-padmin" value="${esc(DB.c.pass_admin || 'admin123')}"></label>
+          <label style="flex:1;min-width:150px">Password Penguji (Kosongkan jika bebas)<input id="c-ppenguji" value="${esc(DB.c.pass_penguji || '')}"></label>
+        </div>
+        <div style="margin-top:12px">
+          <button type="submit">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Ekspor / Backup Excel (.xlsx)</h3>
+      <p class="mu">Unduh seluruh database terpisah per sheet dalam satu file Excel.</p>
+      <button class="g" onclick="exportExcel()">Download Backup Excel (.xlsx)</button>
+    </div>
+  `;
+}
+
+function saveApiConfig() {
+  const url = document.getElementById('cfg-api').value.trim();
+  localStorage.setItem('ujian_api_url', url);
+  toast('URL API tersimpan');
+  pullFromCloud();
+}
+
+function pushAllToCloud() {
+  askConfirm('Timpa seluruh data di Google Spreadsheet dengan data yang ada di browser saat ini?', () => {
+    pushToCloud('sync_all', { data: DB });
+  });
+}
+
+function saveGeneralConfig(e) {
+  e.preventDefault();
+  DB.c.madrasah = document.getElementById('c-madrasah').value.trim();
+  DB.c.tahun_ajaran = document.getElementById('c-ta').value.trim();
+  DB.c.kepala_madrasah = document.getElementById('c-kepala').value.trim();
+  DB.c.nip_kepala = document.getElementById('c-nip').value.trim();
+  DB.c.pass_admin = document.getElementById('c-padmin').value;
+  DB.c.pass_penguji = document.getElementById('c-ppenguji').value;
+  document.getElementById('hdr-madrasah').textContent = '· ' + DB.c.madrasah;
+  pushToCloud('save_config', { c: DB.c });
+}
+
+function exportExcel() {
+  if (typeof XLSX === 'undefined') return toast('Library XLSX belum dimuat');
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.b), 'Bank_Soal');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.p.map(p => ({ ...p, soal_ids: p.soal_ids.join(',') }))), 'Paket_Soal');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(DB.s), 'Data_Siswa');
+  
+  const nilaiArr = DB.s.map(s => {
+    const n = DB.v[s.nis] || {};
+    return { nis: s.nis, nama: s.nama, NAHWU: n.NAHWU || '', SEJARAH: n.SEJARAH || '', NU: n.NU || '', HADIS: n.HADIS || '', FIQIH: n.FIQIH || '' };
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(nilaiArr), 'Hasil_Penilaian');
+  XLSX.writeFile(wb, `Database_Ujian_Komprehensif_${new Date().toISOString().slice(0, 10)}.xlsx`);
+}
+
+// ============================================================================
+// UTILITAS CETAK & ESCAPE
+// ============================================================================
+function printPaket(paketId, withKey) {
+  const pkt = DB.p.find(x => x.id === paketId);
+  if (!pkt) return;
+  const soalList = pkt.soal_ids.map(id => DB.b.find(s => s.id === id)).filter(Boolean);
+  const html = `
+    <div class="sh">
+      <div class="kop">
+        <b>${esc(DB.c.madrasah || 'MA AL FATTAH')}</b><br>
+        NASKAH SOAL UJIAN KOMPREHENSIF · ${esc(pkt.nama.toUpperCase())}
+      </div>
+      <table>
+        <thead><tr><th style="width:40px">No</th><th style="width:90px">Mapel</th><th>Butir Soal ${withKey ? '& Kunci Jawaban' : ''}</th></tr></thead>
+        <tbody>
+          ${soalList.map((s, i) => {
+            const parts = s.q.split(/Jawab\s*:|Jawaban\s*:/i);
+            const tanya = parts[0].trim();
+            const jawab = parts[1] ? parts[1].trim() : '';
+            return `
+              <tr>
+                <td>${i + 1}</td>
+                <td>${esc(s.m)}<br><small>(${esc(s.id)})</small></td>
+                <td>
+                  <div class="pq">${esc(tanya)}</div>
+                  ${withKey && jawab ? `<div class="ky"><b>Kunci:</b> ${esc(jawab)}</div>` : ''}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  triggerPrint(html);
+}
+
+function triggerPrint(innerHtml) {
+  const pr = document.getElementById('pr');
+  pr.innerHTML = `<style>${PCSS}</style>${innerHtml}`;
+  window.print();
+}
+
+function esc(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Inisialisasi Tema & Aplikasi
+const savedTheme = localStorage.getItem('ujian_theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+initAuth();
+</script>
+</body>
+</html>
